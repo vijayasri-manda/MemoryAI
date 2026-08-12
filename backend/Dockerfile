@@ -3,9 +3,12 @@ FROM python:3.12-slim AS builder
 
 WORKDIR /app
 
-# Install system dependencies for psycopg2, faiss, etc.
+# Install system dependencies for C/C++ extensions (Chroma, PyDantic, Tiktoken, etc.)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    g++ \
+    cmake \
+    python3-dev \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
