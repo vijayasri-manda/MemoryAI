@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-memory
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: ai-memory
+data:
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"
+  VECTOR_STORE_TYPE: "chroma"
+  EMBEDDING_PROVIDER: "sentence_transformers"
+  EMBEDDING_MODEL: "all-MiniLM-L6-v2"
+  EMBEDDING_DIMENSION: "384"
+  LLM_PROVIDER: "google"
+  LLM_MODEL: "gemini-2.5-flash"
+  LLM_TEMPERATURE: "0.7"
+  LLM_MAX_TOKENS: "2048"
+  LLM_STREAMING: "true"
+  RAG_TOP_K: "5"
+  RAG_SIMILARITY_THRESHOLD: "0.65"
+  RAG_MAX_CONTEXT_TOKENS: "2000"
+  RAG_CHUNK_SIZE: "512"
+  RAG_CHUNK_OVERLAP: "128"
+  RAG_RERANK_ENABLED: "true"
+  RAG_DEDUPE_THRESHOLD: "0.92"
+  RAG_COMPRESS_ENABLED: "true"
+  MEMORY_TTL_DAYS: "365"
+  MEMORY_IMPORTANCE_THRESHOLD: "0.3"
+  MEMORY_SUMMARY_INTERVAL: "10"
+  DATABASE_POOL_SIZE: "10"
+  DATABASE_MAX_OVERFLOW: "20"
+  CORS_ORIGINS: "https://ai-memory.yourdomain.com"
+---
+# Secrets (use sealed-secrets or external-secrets in prod)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secrets
+  namespace: ai-memory
+type: Opaque
+stringData:
+  SECRET_KEY: "CHANGE_ME_IN_PRODUCTION_USE_32_CHAR_STRING"
+  DATABASE_URL: "postgresql+asyncpg://postgres:CHANGE_ME@postgres-svc:5432/ai_memory"
+  GEMINI_API_KEY: "your_gemini_api_key_here"
+  GOOGLE_API_KEY: ""
+  OPENAI_API_KEY: ""
+  ANTHROPIC_API_KEY: ""
+  REDIS_URL: "redis://redis-svc:6379/0"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secrets
+  namespace: ai-memory
+type: Opaque
+stringData:
+  POSTGRES_DB: "ai_memory"
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "CHANGE_ME"
